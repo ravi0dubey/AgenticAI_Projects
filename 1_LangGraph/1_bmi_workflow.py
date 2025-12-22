@@ -1,6 +1,8 @@
 from langgraph.graph import StateGraph, START, END
 from typing import TypedDict
 
+
+
 # Step 1: Define State
 class BMIState(TypedDict):
     weight: float  # in kilograms

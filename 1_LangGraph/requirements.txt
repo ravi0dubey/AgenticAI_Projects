@@ -2,3 +2,7 @@ langgraph
 langchain
 dotenv
 Ipython
+
+# OpenAI Integration
+langchain-openai 
+openai

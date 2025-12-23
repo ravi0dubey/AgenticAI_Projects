@@ -1,8 +1,6 @@
 from langgraph.graph import StateGraph, START, END
 from typing import TypedDict
 
-
-
 # Step 1: Define State
 class BMIState(TypedDict):
     weight: float  # in kilograms
@@ -16,7 +14,6 @@ def calculate_bmi(state: BMIState) -> BMIState:
     height = state['height']
     state['bmi'] = round(weight / (height**2),2)
     return state    
-
 
 # Step 3: Define bmi_category function
 def bmi_category(state: BMIState) -> BMIState:
@@ -46,7 +43,7 @@ bmi_graph.add_edge('bmi_category', END)
 # Step 7: Compile the Graph
 workflow= bmi_graph.compile()   
 
-# Step 7: Execute the Graph with initial data
+# Step 8: Execute the Graph with initial data
 initial_data = {
     "weight": 80.85,
     "height": 1.80,
@@ -57,5 +54,9 @@ bmi_result = workflow.invoke(initial_data)
 
 print(f"Bmi: {bmi_result['bmi']}")
 print(f"Category: {bmi_result['category']}")
+
+# Step 9: Visualize the workflow
+from IPython.display import Image
+Image(workflow.get_graph().draw_mermaid_png())
 
 

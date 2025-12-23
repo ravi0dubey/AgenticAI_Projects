@@ -9,9 +9,8 @@ from IPython.display import display, Markdown
 load_dotenv()
 
 # model initialization
-# model = ChatOpenAI( temperature=0)   
 model_openapi= ChatOpenAI(temperature=0, api_key=os.getenv("OPEN_API_KEY") )
-# model_openapi= ChatOpenAI(model = "gpt-4o-mini",temperature=0, api_key=os.getenv("OPEN_API_KEY") )
+
 
 # Step 1: Define State
 class LLMState(TypedDict):           
@@ -24,18 +23,7 @@ def llm_response(state: LLMState) -> LLMState:
     response = model_openapi.invoke(prompt).content
     state['answer'] = response
     return state  
-
-# # Step 2: Define llm_response function
-# def llm_response(state: LLMState) -> LLMState:      
-#     # Extract the question from state
-#     question = state['question']
-#     # create prompt using the question
-#     prompt = f'Answer the following question: {question}'
-#     # Get response from the model
-#     answer = model_openapi.invoke(prompt).content
-#     # Update state with the response
-#     state['answer'] = answer
-#     return state  
+ 
 
 # Step 3: Define Graph
 llm_graph = StateGraph(LLMState)   

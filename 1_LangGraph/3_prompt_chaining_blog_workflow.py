@@ -14,7 +14,7 @@ class BlogState(TypedDict):
     title: str
     outline: str
     content: str
-    evaluation_score: str
+    evaluation_score: int
 
 # Step 1: Create create_outline Function
 def create_outline(state: BlogState) -> BlogState:
@@ -36,9 +36,9 @@ def create_blog(state: BlogState) -> BlogState:
 def evaluate_blog(state: BlogState) -> BlogState:
     outline = state['outline']
     content = state['content']
-    prompt = f'Based on the outline - {outline}, evaluate the blog content - {content} and provide feedback on how to improve it.'
+    prompt = f'Based on the outline - {outline}, evaluate the blog content - {content} and generate score out of 10 with 10 being highest quality.'
     evaluation = model_openapi.invoke(prompt).content
-    state['evaluation_score'] = evaluation
+    state['evaluation_score'] = evaluation.strip()
     return state
 
 
@@ -62,7 +62,7 @@ workflow= blog_graph.compile()
 
 # Step 8: Execute the Graph with initial data
 initial_data = {
-    "title": "Married Life: Tips for a Happy Union",
+    "title": "AI and the Future of Work",
     "outline": "",
     "content": "",
     "evaluation_score": ""

@@ -4,7 +4,8 @@ from dotenv import load_dotenv
 import os
 from IPython.display import display, Markdown
 from pydantic import BaseModel, Field
-from typing import TypedDict, Annotated, Optional, Literal
+from typing import TypedDict, Annotated
+import operator
 
 
 # Load environment variables from .env file
@@ -51,36 +52,42 @@ class EssayState(TypedDict):
     feedback_score_on_depths_of_analysis: int
     feedback_on_language_of_essay: str
     feedback_score_on_language_of_essay: int
+    individual_score: Annotated[list[int],operator.add]
     final_feedback: str
-    final_feedback_score: int
+    final_feedback_score: float
+
+
 
 # Step 5: Create evaluate_essay_for_clarity_of_thoughts Function
 def evaluate_essay_for_clarity_of_thoughts(state: EssayState):
     essay = state['essay']
     prompt = f'Read the following essay: {essay} and provide feedback on the clarity of thoughts presented in the essay along with a score out of 10.'
-    feedback = strcutured_model.invoke(prompt)
-    feedback_score_on_clarity_of_thoughts: int = int(feedback.score)
-    feedback_on_clarity_of_thoughts: str = feedback.feedback    
-    return {'feedback_on_clarity_of_thoughts': feedback_on_clarity_of_thoughts, 'feedback_score_on_clarity_of_thoughts': feedback_score_on_clarity_of_thoughts}   
+    response = strcutured_model.invoke(prompt)
+    feedback_score_on_clarity_of_thoughts: int = int(response.score)
+    feedback_on_clarity_of_thoughts: str = response.feedback   
+    individual_score= response.score 
+    return {'feedback_on_clarity_of_thoughts': feedback_on_clarity_of_thoughts, 'feedback_score_on_clarity_of_thoughts': feedback_score_on_clarity_of_thoughts, 'individual_score': [individual_score]}   
 
 
 # Step 6: Create evaluate_essay_for_depths_of_analysis Function
 def evaluate_essay_for_depths_of_analysis(state: EssayState):           
     essay = state['essay']
     prompt = f'Read the following essay: {essay} and provide feedback on the depths of analysis presented in the essay along with a score out of 10.'
-    feedback = strcutured_model.invoke(prompt)
-    feedback_score_on_depths_of_analysis: int = int(feedback.score)
-    feedback_on_depths_of_analysis_: str = feedback.feedback
-    return {'feedback_on_depths_of_analysis_': feedback_on_depths_of_analysis_, 'feedback_score_on_depths_of_analysis': feedback_score_on_depths_of_analysis}
+    response = strcutured_model.invoke(prompt)
+    feedback_score_on_depths_of_analysis: int = int(response.score)
+    feedback_on_depths_of_analysis_: str = response.feedback
+    individual_score= response.score
+    return {'feedback_on_depths_of_analysis_': feedback_on_depths_of_analysis_, 'feedback_score_on_depths_of_analysis': feedback_score_on_depths_of_analysis, 'individual_score': [individual_score]}
 
 # Step 7: Create evaluate_essay_for_language_of_essay Function
 def evaluate_essay_for_language_of_essay(state: EssayState):           
     essay = state['essay']
     prompt = f'Read the following essay: {essay} and provide feedback on the language of the essay along with a score out of 10.'
-    feedback = strcutured_model.invoke(prompt)
-    feedback_score_on_language_of_essay: int = int(feedback.score)
-    feedback_on_language_of_essay: str = feedback.feedback
-    return {'feedback_on_language_of_essay': feedback_on_language_of_essay, 'feedback_score_on_language_of_essay': feedback_score_on_language_of_essay}
+    response = strcutured_model.invoke(prompt)
+    feedback_on_language_of_essay: str = response.feedback
+    feedback_score_on_language_of_essay: int = int(response.score)
+    individual_score= response.score
+    return {'feedback_on_language_of_essay': feedback_on_language_of_essay, 'feedback_score_on_language_of_essay': feedback_score_on_language_of_essay, 'individual_score': [individual_score]}
 
 
 # Step 8: Create compile_final_feedback Function
@@ -88,13 +95,24 @@ def compile_final_feedback(state: EssayState):
     clarity_score = state['feedback_score_on_clarity_of_thoughts']
     depth_score = state['feedback_score_on_depths_of_analysis']
     language_score = state['feedback_score_on_language_of_essay']
-    final_feedback_score = round((clarity_score + depth_score + language_score) / 3, 2)
+    # final_feedback_score = round((clarity_score + depth_score + language_score) / 3, 2)
+    final_feedback_score = 0
+    for i in state['individual_score']:
+            final_feedback_score += i
+    final_feedback_score = round(final_feedback_score / 3, 2)
     final_feedback = f"""Final Feedback Summary:\n
       Clarity of Thoughts: {state['feedback_on_clarity_of_thoughts']} (Score: {clarity_score}) \n
       Depths of Analysis: {state['feedback_on_depths_of_analysis_']} (Score: {depth_score}) \n
       Language of Essay: {state['feedback_on_language_of_essay']} (Score: {language_score}) \n
       Overall Score: {final_feedback_score}"""
     return {'final_feedback': final_feedback, 'final_feedback_score': final_feedback_score} 
+
+def generate_final_feedback(state: EssayState):
+    final_feedback_prompt = f"based on the following feedbacks:\n Clarity of Thoughts: {state['feedback_on_clarity_of_thoughts']}\n Depths of Analysis: {state['feedback_on_depths_of_analysis_']} \n Language of Essay: {state['feedback_on_language_of_essay']} \n provide a consolidated final feedback."
+    response = model_openapi.invoke(final_feedback_prompt)
+    final_feedback: str = response.content
+    final_feedback_score = round(sum(state['individual_score'])/len(state['individual_score'])  , 2)  
+    return {'final_feedback': final_feedback, 'final_feedback_score': final_feedback_score}
 
 # Step 9: Create StateGraph and add nodes and edges
 cricket_graph = StateGraph(EssayState)
@@ -103,19 +121,19 @@ cricket_graph = StateGraph(EssayState)
 cricket_graph.add_node('evaluate_essay_for_clarity_of_thoughts', evaluate_essay_for_clarity_of_thoughts)
 cricket_graph.add_node('evaluate_essay_for_depths_of_analysis', evaluate_essay_for_depths_of_analysis)
 cricket_graph.add_node('evaluate_essay_for_language_of_essay', evaluate_essay_for_language_of_essay)
-cricket_graph.add_node('compile_final_feedback', compile_final_feedback)    
+cricket_graph.add_node('generate_final_feedback', generate_final_feedback)    
 
 # Step 11: Define edges to create parallel workflow
 cricket_graph.add_edge(START, 'evaluate_essay_for_clarity_of_thoughts')
 cricket_graph.add_edge(START, 'evaluate_essay_for_depths_of_analysis')
 cricket_graph.add_edge(START, 'evaluate_essay_for_language_of_essay')
-cricket_graph.add_edge('evaluate_essay_for_clarity_of_thoughts', 'compile_final_feedback')
-cricket_graph.add_edge('evaluate_essay_for_depths_of_analysis', 'compile_final_feedback')
-cricket_graph.add_edge('evaluate_essay_for_language_of_essay', 'compile_final_feedback')
-cricket_graph.add_edge('compile_final_feedback', END)
+cricket_graph.add_edge('evaluate_essay_for_clarity_of_thoughts', 'generate_final_feedback')
+cricket_graph.add_edge('evaluate_essay_for_depths_of_analysis', 'generate_final_feedback')
+cricket_graph.add_edge('evaluate_essay_for_language_of_essay', 'generate_final_feedback')
+cricket_graph.add_edge('generate_final_feedback', END)
 
 # step 12: Compile the workflow
-workflow= cricket_graph.compile()
+workflow = cricket_graph.compile()
 
 from IPython.display import Image
 Image(workflow.get_graph().draw_mermaid_png())
@@ -134,12 +152,14 @@ input_data= {
     'feedback_score_on_depths_of_analysis': 0,
     'feedback_on_language_of_essay': " ",
     'feedback_score_on_language_of_essay': 0,
+    'individual_score': [],
     'final_feedback': " ",
-    'final_feedback_score': 0
+    'final_feedback_score': 0.0
 }       
 
 # Step 15: Invoke the workflow
 result = workflow.invoke(input_data)
 
-print(f"Final Feedback Score: {result['final_feedback_score']}")
+
 print(f"Detailed Feedback: {result['final_feedback']}")
+print(f"Final Feedback Score: {result['final_feedback_score']}")

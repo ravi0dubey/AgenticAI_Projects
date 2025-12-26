@@ -33,13 +33,13 @@ json_schema = {
 
 
 # Step2 : Create Pydantic Class to store the feedback in structured format
-class Review_annotated(BaseModel):
+class Evaluation_Schema(BaseModel):
     feedback : str = Field(description="Feedback on the essay based on the criteria provided")
     score : int = Field(description="Return a score from 1 to 10 where 1 being lowest and 10 being highest")
 
 # Step3 : Create Structured Model using eithre Json Schema or Pydantic Class
-strcutured_model = model_openapi.with_structured_output(json_schema)
-strcutured_model_annotated = model_openapi.with_pydantic_output(Review_annotated)
+# strcutured_model = model_openapi.with_structured_output(json_schema)
+strcutured_model = model_openapi.with_structured_output(Evaluation_Schema)
 
 
 # Step 4: Define Essay State
@@ -59,8 +59,8 @@ def evaluate_essay_for_clarity_of_thoughts(state: EssayState):
     essay = state['essay']
     prompt = f'Read the following essay: {essay} and provide feedback on the clarity of thoughts presented in the essay along with a score out of 10.'
     feedback = strcutured_model.invoke(prompt)
-    feedback_score_on_clarity_of_thoughts: int = int(feedback["score"])
-    feedback_on_clarity_of_thoughts: str = feedback["feedback"]    
+    feedback_score_on_clarity_of_thoughts: int = int(feedback.score)
+    feedback_on_clarity_of_thoughts: str = feedback.feedback    
     return {'feedback_on_clarity_of_thoughts': feedback_on_clarity_of_thoughts, 'feedback_score_on_clarity_of_thoughts': feedback_score_on_clarity_of_thoughts}   
 
 
@@ -69,9 +69,8 @@ def evaluate_essay_for_depths_of_analysis(state: EssayState):
     essay = state['essay']
     prompt = f'Read the following essay: {essay} and provide feedback on the depths of analysis presented in the essay along with a score out of 10.'
     feedback = strcutured_model.invoke(prompt)
-    print(feedback)
-    feedback_score_on_depths_of_analysis: int = int(feedback["score"])
-    feedback_on_depths_of_analysis_: str = feedback["feedback"]
+    feedback_score_on_depths_of_analysis: int = int(feedback.score)
+    feedback_on_depths_of_analysis_: str = feedback.feedback
     return {'feedback_on_depths_of_analysis_': feedback_on_depths_of_analysis_, 'feedback_score_on_depths_of_analysis': feedback_score_on_depths_of_analysis}
 
 # Step 7: Create evaluate_essay_for_language_of_essay Function
@@ -79,8 +78,8 @@ def evaluate_essay_for_language_of_essay(state: EssayState):
     essay = state['essay']
     prompt = f'Read the following essay: {essay} and provide feedback on the language of the essay along with a score out of 10.'
     feedback = strcutured_model.invoke(prompt)
-    feedback_score_on_language_of_essay: int = int(feedback["score"])
-    feedback_on_language_of_essay: str = feedback["feedback"]    
+    feedback_score_on_language_of_essay: int = int(feedback.score)
+    feedback_on_language_of_essay: str = feedback.feedback
     return {'feedback_on_language_of_essay': feedback_on_language_of_essay, 'feedback_score_on_language_of_essay': feedback_score_on_language_of_essay}
 
 

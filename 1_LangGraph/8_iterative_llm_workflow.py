@@ -135,10 +135,11 @@ tweet_topic_state.add_node('tweet_it',tweet_it)
 
 # Step 10 : Add the Edge
 tweet_topic_state.add_edge(START, 'generate_tweet_for_the_topic')
-tweet_topic_state.add_edge('generate_tweet_for_the_topic',evaluate_the_tweet_for_the_topic )
+tweet_topic_state.add_edge('generate_tweet_for_the_topic','evaluate_the_tweet_for_the_topic' )
 tweet_topic_state.add_conditional_edges('evaluate_the_tweet_for_the_topic', route_evaluation, {'approved': 'tweet_it', 'needs_improvement': 'optimize_the_tweet'} )
 tweet_topic_state.add_edge('optimize_the_tweet','evaluate_the_tweet_for_the_topic')
 tweet_topic_state.add_edge('tweet_it', END)
+
 
 # Step 11: Compile the workflow
 workflow= tweet_topic_state.compile()

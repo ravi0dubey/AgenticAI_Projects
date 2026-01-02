@@ -146,7 +146,7 @@ workflow= tweet_topic_state.compile()
 
 # Step 12: Define initial state
 initial_state: TweetOnTopicState = {
-    'topic' : 'Banning Phones in Schools',
+    'topic' : 'Dhurandhar Movie',
     'tweet_generated_on_the_topic' : ' ',
     'evaluation_of_the_tweet': 'needs_improvement',
     'optimized_tweet_on_the_topic' : ' ' ,

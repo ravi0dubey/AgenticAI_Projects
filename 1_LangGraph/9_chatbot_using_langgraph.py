@@ -38,14 +38,25 @@ chatgraph.add_edge('chat_node',END)
 # Step Compile thechatgraph
 chat_workflow =chatgraph.compile()
 
-# Step 12: Define initial state
-initial_state: ChatState = {
-    'chat_messages' : [HumanMessage(content= 'What is capital of Canada')],
-}
+# # Step 12: Define initial state
+# initial_state: ChatState = {
+#     'chat_messages' : [HumanMessage(content= 'What is capital of Canada')],
+# }
 
-# Step 13: Execute the workflow with an initial state
-final_state = chat_workflow.invoke(initial_state)
-print(final_state['chat_messages'])
+# # Step 13: Execute the workflow with an initial state
+# final_state = chat_workflow.invoke(initial_state)
+# print(final_state['chat_messages'])
+
+while True:
+    user_message = input('User: ')
+    # print('User:', user_message)
+    if user_message.strip().lower() in ['exit','quit','bye']:
+        print('AI: It was lovely talking to you, have a good day!')
+        break
+    response = chat_workflow.invoke({'chat_messages' : [HumanMessage(content= user_message)]})
+    print('AI:', response['chat_messages'][-1].content)
+
+
 
 # Step 14: Visualize the workflow
 from IPython.display import Image

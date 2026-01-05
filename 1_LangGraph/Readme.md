@@ -10,3 +10,6 @@
 ## Iterative workflow
 
 ![alt text](image.png)
+
+## Chat_workflow
+![alt text](image-1.png)

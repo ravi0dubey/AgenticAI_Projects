@@ -22,13 +22,31 @@ class ChatState(TypedDict):
 def chat_node(state: ChatState):
     chat_message = state['chat_messages']
     response =model_openapi.invoke(chat_message)
-    return ({'response': response})
+    return ({'chat_messages': [response]})
 
 # Step : State
-graph = StateGraph(ChatState)
+chatgraph = StateGraph(ChatState)
 
 # Step Add Node
+chatgraph.add_node('chat_node', chat_node)
 
-graph.add_node('chat_node', chat_node)
 
+# step add Edge
+chatgraph.add_edge(START, 'chat_node')
+chatgraph.add_edge('chat_node',END)
 
+# Step Compile thechatgraph
+chat_workflow =chatgraph.compile()
+
+# Step 12: Define initial state
+initial_state: ChatState = {
+    'chat_messages' : [HumanMessage(content= 'What is capital of Canada')],
+}
+
+# Step 13: Execute the workflow with an initial state
+final_state = chat_workflow.invoke(initial_state)
+print(final_state['chat_messages'])
+
+# Step 14: Visualize the workflow
+from IPython.display import Image
+Image(chat_workflow.get_graph().draw_mermaid_png())

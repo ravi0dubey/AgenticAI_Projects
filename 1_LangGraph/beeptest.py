@@ -1,14 +1,21 @@
 import time
-import winsound  # Only works on Windows
+import os
+import platform
 
-def beep_at_interval(interval, duration, repetitions):
-    for _ in range(repetitions):
-        winsound.Beep(1000, duration)  # Frequency 1000 Hz, duration in milliseconds
-        time.sleep(interval)
+INTERVAL_SECONDS = 5   # change this (e.g., 4 sec inhale, 6 sec exhale)
 
-if __name__ == "__main__":
-    interval = float(input("Enter the interval between beeps (in seconds): "))
-    duration = int(input("Enter the duration of each beep (in milliseconds): "))
-    repetitions = int(input("Enter the number of beeps: "))
+def beep():
+    if platform.system() == "Windows":
+        import winsound
+        winsound.Beep(1000, 600)  # frequency, duration(ms)
+    else:
+        os.system("printf '\a'")  # Linux / Mac beep
 
-    beep_at_interval(interval, duration, repetitions)
+print("Breathing timer started. Press Ctrl+C to stop.")
+
+try:
+    while True:
+        beep()
+        time.sleep(INTERVAL_SECONDS)
+except KeyboardInterrupt:
+    print("\nTimer stopped.")

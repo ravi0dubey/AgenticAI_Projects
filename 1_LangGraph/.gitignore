@@ -3,3 +3,4 @@ agentaienv/
 __pycache__/
 .ipynb_checkpoints/
 .env
+/beeptest.py

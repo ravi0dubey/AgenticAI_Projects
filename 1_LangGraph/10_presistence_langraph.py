@@ -43,10 +43,8 @@ joke_graph.add_edge(START,'generate_joke')
 joke_graph.add_edge('generate_joke','generate_explanation_on_joke')
 joke_graph.add_edge('generate_explanation_on_joke', END)
 
-
 # Step8 : Adding checkpointer
 joke_checkpointer = InMemorySaver()
-
 
 # Step9 : Compile the graph
 joke_workflow = joke_graph.compile(checkpointer=joke_checkpointer)
@@ -55,13 +53,13 @@ joke_workflow = joke_graph.compile(checkpointer=joke_checkpointer)
 joke_config1 = {'configurable': {'thread_id': '1'}}
 joke_config2 = {'configurable': {'thread_id': '2'}}
 
-
 # Step 11: Define initial state for First topic of the joke
 initial_state: JokeState = {
     'topic' : 'pineapple',
     'joke' : ' ',
     'explanation': ' ',
 }
+
 # Step 12 : Invoke the Graph
 joke_final_state = joke_workflow.invoke(initial_state, config= joke_config1)
 print(joke_final_state)
@@ -70,7 +68,7 @@ print(joke_final_state)
 print(f'joke_state_ : {joke_workflow.get_state(joke_config1)}')
 print(f'joke_state_history : {list(joke_workflow.get_state_history(joke_config1))}')
 
-# Step 14: Define initial state for Second topic of the joke
+ # Step 14: Define initial state for Second topic of the joke
 initial_state: JokeState = {
     'topic' : 'guava',
     'joke' : ' ',

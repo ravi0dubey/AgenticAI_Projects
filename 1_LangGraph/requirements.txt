@@ -6,3 +6,5 @@ Ipython
 # OpenAI Integration
 langchain-openai 
 openai
+
+streamlit

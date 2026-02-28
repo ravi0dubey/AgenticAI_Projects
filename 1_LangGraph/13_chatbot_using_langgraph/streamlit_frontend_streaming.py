@@ -22,7 +22,8 @@ if user_input:
 
     with st.chat_message('AI'):
         ai_message =  st.write_stream(
-           message_chunk.content for message_chunk, metadata in chat_workflow.stream(
+           message_chunk.content 
+           for message_chunk, metadata in chat_workflow.stream(
                 {'messages': [HumanMessage(content= user_input)]}, 
                 config= CONFIG,
                 stream_mode = 'messages'

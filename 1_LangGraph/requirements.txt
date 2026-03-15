@@ -1,10 +1,14 @@
 langgraph
 langchain
-dotenv
-Ipython
+python-dotenv
+ipython
 
 # OpenAI Integration
-langchain-openai 
+langchain-openai
 openai
 
-streamlit
+# Streamlit
+streamlit==1.32.2
+blinker==1.7.0
+protobuf==4.25.3
+typing_extensions>=4.8.0

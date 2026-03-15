@@ -1,5 +1,5 @@
 import streamlit as st
-from langgraph_backend import chat_workflow
+from langgraph_basicchatbot_backend import chat_workflow
 from langchain_core.messages import HumanMessage
 
 # st.session_state -> dict -> 

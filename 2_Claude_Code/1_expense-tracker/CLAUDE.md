@@ -8,7 +8,7 @@ Spendly is a lightweight personal expense tracker built with Flask and SQLite.
 
 ## Architecture
 ```
-spendly/
+Expense-Tracker/
 ├── app.py              # All routes — single file, no blueprints
 ├── database/
 │   └── db.py           # SQLite helpers: get_db(), init_db(), seed_db()

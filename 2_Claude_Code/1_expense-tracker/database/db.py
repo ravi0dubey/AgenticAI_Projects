@@ -62,8 +62,17 @@ def get_user_by_email(email):
     conn = get_db()
     try:
         return conn.execute(
-            "SELECT id, name, email, password_hash FROM users WHERE email = ?",
-            (email,),
+            "SELECT * FROM users WHERE email = ?", (email,)
+        ).fetchone()
+    finally:
+        conn.close()
+
+
+def get_user_by_id(user_id):
+    conn = get_db()
+    try:
+        return conn.execute(
+            "SELECT * FROM users WHERE id = ?", (user_id,)
         ).fetchone()
     finally:
         conn.close()

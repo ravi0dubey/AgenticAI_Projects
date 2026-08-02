@@ -1,12 +1,30 @@
 import sqlite3
+from datetime import datetime
+from functools import wraps
 
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash
 
-from database.db import create_user, get_db, get_user_by_email, init_db, seed_db
+from database.db import (
+    create_user,
+    get_db,
+    get_user_by_email,
+    get_user_by_id,
+    init_db,
+    seed_db,
+)
 
 app = Flask(__name__)
 app.secret_key = "dev-secret-key-change-in-production"
+
+
+def login_required(view):
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        if "user_id" not in session:
+            return redirect(url_for("login"))
+        return view(*args, **kwargs)
+    return wrapped
 
 
 # ------------------------------------------------------------------ #
@@ -58,10 +76,26 @@ def login():
             return render_template("login.html")
 
         session["user_id"] = user["id"]
-        session["user_name"] = user["name"]
+        flash("Welcome back!")
         return redirect(url_for("profile"))
 
     return render_template("login.html")
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
+
+
+@app.route("/profile")
+@login_required
+def profile():
+    user = get_user_by_id(session["user_id"])
+    member_since = datetime.strptime(
+        user["created_at"], "%Y-%m-%d %H:%M:%S"
+    ).strftime("%B %Y")
+    return render_template("profile.html", user=user, member_since=member_since)
 
 
 @app.route("/terms")
@@ -74,21 +108,9 @@ def privacy():
     return render_template("privacy.html")
 
 
-@app.route("/logout")
-def logout():
-    session.clear()
-    flash("You have been signed out.")
-    return redirect(url_for("login"))
-
-
 # ------------------------------------------------------------------ #
 # Placeholder routes — students will implement these                  #
 # ------------------------------------------------------------------ #
-
-@app.route("/profile")
-def profile():
-    return "Profile page — coming in Step 4"
-
 
 @app.route("/expenses/add")
 def add_expense():

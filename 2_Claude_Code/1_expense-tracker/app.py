@@ -1,5 +1,4 @@
 import sqlite3
-from datetime import datetime
 from functools import wraps
 
 from flask import Flask, flash, redirect, render_template, request, session, url_for
@@ -9,10 +8,15 @@ from database.db import (
     create_user,
     get_db,
     get_user_by_email,
-    get_user_by_id,
     init_db,
     seed_db,
 )
+from database.queries import (
+    get_category_breakdown,
+    get_recent_transactions,
+    get_summary_stats,
+)
+from database.queries import get_user_by_id as get_profile_user
 
 app = Flask(__name__)
 app.secret_key = "dev-secret-key-change-in-production"
@@ -91,11 +95,19 @@ def logout():
 @app.route("/profile")
 @login_required
 def profile():
-    user = get_user_by_id(session["user_id"])
-    member_since = datetime.strptime(
-        user["created_at"], "%Y-%m-%d %H:%M:%S"
-    ).strftime("%B %Y")
-    return render_template("profile.html", user=user, member_since=member_since)
+    user_id = session["user_id"]
+    user = get_profile_user(user_id)
+    stats = get_summary_stats(user_id)
+    transactions = get_recent_transactions(user_id)
+    categories = get_category_breakdown(user_id)
+    return render_template(
+        "profile.html",
+        user=user,
+        member_since=user["member_since"],
+        stats=stats,
+        transactions=transactions,
+        categories=categories,
+    )
 
 
 @app.route("/terms")

@@ -508,6 +508,119 @@ a { color: inherit; text-decoration: none; }
     color: var(--ink);
 }
 
+/* ------------------------------------------------------------------ */
+/* Profile page — stats, transactions, category breakdown              */
+/* ------------------------------------------------------------------ */
+
+.profile-container {
+    max-width: 720px;
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-tile {
+    background: var(--paper-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--ink-muted);
+}
+
+.stat-value {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    color: var(--ink);
+}
+
+.profile-panel {
+    background: var(--paper-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.panel-title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--ink);
+    margin-bottom: 1rem;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.data-table th {
+    text-align: left;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--ink-muted);
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.data-table td {
+    padding: 0.6rem;
+    border-bottom: 1px solid var(--border-soft);
+    color: var(--ink-soft);
+}
+
+.data-table tr:last-child td { border-bottom: none; }
+
+.text-right { text-align: right; }
+
+.empty-state {
+    color: var(--ink-muted);
+    font-size: 0.9rem;
+}
+
+.category-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.category-row-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    margin-bottom: 0.35rem;
+}
+
+.category-name { color: var(--ink); font-weight: 500; }
+
+.category-amount { color: var(--ink-muted); }
+
+.category-bar-track {
+    background: var(--paper-warm);
+    border-radius: var(--radius-sm);
+    height: 8px;
+    overflow: hidden;
+}
+
+.category-bar-fill {
+    width: var(--fill-pct, 0%);
+    height: 100%;
+    background: var(--accent);
+    border-radius: var(--radius-sm);
+}
+
 .btn-submit {
     width: 100%;
     padding: 0.7rem;

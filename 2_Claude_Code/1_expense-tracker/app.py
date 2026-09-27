@@ -37,6 +37,7 @@ def login_required(view):
 
 @app.route("/")
 def landing():
+    print("inside landing routine")
     return render_template("landing.html")
 
 
